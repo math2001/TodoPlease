@@ -11,13 +11,28 @@ def openfile(*args, **kwargs):
 
 class TodoPlease(sublime_plugin.WindowCommand):
 
+    def get_project_manager_projects(self):
+        with open(os.path.join(sublime.packages_path(), 'User', 'Projects', 'recent.json')) as fp:
+            return json.load(fp)
+
+    def get_workspaces(self):
+        with open(os.path.join(sublime.packages_path(), '..', 'Local', 'Session.sublime_session'),
+                  encoding='utf-8') as fp:
+            workspaces = json.load(fp).get('workspaces', {}).get('recent_workspaces')
+
+        for workspace in workspaces:
+            workspace = workspace[1] + ':' + workspace[2:-9] + 'project'
+            yield workspace
+
+
     def get_projects_filenames(self):
+        try:
+            recent_project_files = self.get_project_manager_projects()
+        except FileNotFoundError:
+            recent_project_files = list(self.get_workspaces())
+
         project_filenames = []
-        recents = os.path.join(sublime.packages_path(), 'User', 'Projects', 'recent.json')
-        if not os.path.isfile(recents):
-            return []
-        with open(recents) as fp:
-            recent_project_files = json.load(fp)
+
         for project_filename in recent_project_files:
             try:
                 with open(project_filename) as fp:
@@ -48,4 +63,6 @@ class TodoPlease(sublime_plugin.WindowCommand):
                     self.todos.append([os.path.basename(project), '→ ' + filename])
                 break
 
+        if not projects:
+            return
         self.window.show_quick_panel(self.todos, self.open_todo, on_highlight=self.preview_todo)

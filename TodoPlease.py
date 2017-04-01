@@ -28,17 +28,24 @@ class TodoPlease(sublime_plugin.WindowCommand):
                 project_filenames += folders
         return project_filenames
 
+    def open_todo(self, index):
+        if index == -1:
+            self.window.run_command('close')
+            return
+        self.window.open_file(self.todos[index][1][2:])
+
+    def preview_todo(self, index):
+        self.window.open_file(self.todos[index][1][2:], sublime.TRANSIENT)
+
     def run(self):
         todo_names = ['todo', '.todo']
         projects = self.get_projects_filenames()
-        todos = []
+        self.todos = []
         for project in projects:
             for todo_name in todo_names:
                 filename = os.path.join(project, todo_name)
                 if os.path.isfile(filename):
-                    todos.append(filename)
+                    self.todos.append([os.path.basename(project), '→ ' + filename])
                 break
 
-        print("TodoFinder.py:42", todos)
-
-sublime.active_window().run_command('todo_please')
+        self.window.show_quick_panel(self.todos, self.open_todo, on_highlight=self.preview_todo)

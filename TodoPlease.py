@@ -5,9 +5,8 @@ import sublime_plugin
 import os.path
 import json
 
-def openfile(*args, **kwargs):
-    with open(*args, **kwargs) as fp:
-        return fp
+def get_settings():
+    return sublime.load_settings('TodoPlease.sublime-settings')
 
 class TodoPlease(sublime_plugin.WindowCommand):
 
@@ -53,7 +52,8 @@ class TodoPlease(sublime_plugin.WindowCommand):
         self.window.open_file(self.todos[index][1][2:], sublime.TRANSIENT)
 
     def run(self):
-        todo_names = ['todo', '.todo']
+        todo_names = get_settings().get('todo_names')
+
         projects = self.get_projects_filenames()
         self.todos = []
         for project in projects:

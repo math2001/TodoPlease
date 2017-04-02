@@ -1,0 +1,8 @@
+{
+
+    // The file name that TodoPlease will look for
+    // Note that as soon as it match one, it doesn't look for any other in the project
+    // (so, in this case, if it finds a file called 'todo', it won't look for '.todo')
+    "todo_names": ["todo", ".todo"]
+
+}

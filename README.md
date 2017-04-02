@@ -11,3 +11,5 @@ you go to *Project → Quick Switch Project*)
 
 If you use [ProjectManager][] (I recommend you do :wink:), then it'll use the project from this
 package instead of the regular ones.
+
+[ProjectManager]: https://packagecontrol.io/packages/ProjectManager
